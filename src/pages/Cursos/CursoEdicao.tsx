@@ -28,11 +28,24 @@ export const CursoEdicao = () => {
     }
   };
 
+  const updateCurso = async (values: Curso) => {
+    setLoading(true);
+    try {
+      const response = await axios.put(`http://localhost:8080/cursos/${id}`, values);
+      setCurso(response.data);
+    } catch (error) {
+      handleFetchCursosError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleFetchCursosError = (error: unknown) => {
     messageApi.open({
       type: "error",
       content: handleApiError(error as AxiosError),
     });
+    navigate("/cursos");
   };
 
   useEffect(() => {
@@ -56,12 +69,14 @@ export const CursoEdicao = () => {
         items={[
           {
             label: "Dados Gerais",
-            children: <FormCadastroCurso curso={curso} loading={loading} buttonText="Atualizar" />,
+            children: (
+              <FormCadastroCurso curso={curso} loading={loading} onFinish={updateCurso} buttonText="Atualizar" />
+            ),
           },
-          { label: "Matriz" },
-        ].map(({ label, children }, i) => ({
+          { label: "Matriz", children: <></> },
+        ].map(({ label, children }) => ({
           label,
-          key: i,
+          key: label,
           children,
         }))}
       />
