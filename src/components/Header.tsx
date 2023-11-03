@@ -1,4 +1,4 @@
-import { MailOutlined } from "@ant-design/icons";
+import { BookOutlined, ReadOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 
@@ -16,17 +16,17 @@ export function Header() {
           {
             label: "Cursos",
             key: "/cursos",
-            icon: <MailOutlined />,
+            icon: <BookOutlined />,
           },
           {
             label: "Disciplinas",
             key: "/disciplinas",
-            icon: <MailOutlined />,
+            icon: <ReadOutlined />,
           },
           {
             label: "Perfil",
             key: "/perfil",
-            icon: <MailOutlined />,
+            icon: <UserOutlined />,
           },
         ]}
       />

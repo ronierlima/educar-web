@@ -3,8 +3,22 @@ import { Button, Col, Row, message } from "antd";
 import { useEffect, useState } from "react";
 import { Page } from "../../components/Page";
 import { ApiService } from "../../services/api";
-import { CardCurso } from "./components/CardCurso";
+import { CardCurso } from "../../components/CardCurso";
 import { ModalCadastroCursos } from "./components/ModalCadastroCursos";
+import { Disciplina } from "../Disciplinas/Disciplinas";
+
+export interface Semestre {
+  id: number;
+  semestre: number;
+  disciplinas: Array<Disciplina>;
+}
+export interface MatrizCurricular {
+  id: number;
+  descricao: string;
+  atual: boolean;
+  totalDisciplinas: number;
+  semestres: Array<Semestre>;
+}
 
 export interface Curso {
   id: number;
@@ -12,6 +26,8 @@ export interface Curso {
   semestres: number;
   cargaHoraria: number;
   descricao: string;
+  matrizAtual: MatrizCurricular;
+  matrizes: Array<MatrizCurricular>;
 }
 
 export const Cursos = () => {

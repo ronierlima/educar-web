@@ -33,14 +33,39 @@ export function ModalCadastroDisciplinas({ disciplina, open, close, refresh }: M
     }
   };
 
+  const editarDisciplina = async (values: Disciplina) => {
+    setLoading(true);
+    try {
+      await ApiService.put(`/disciplinas/${disciplina?.id}`, values);
+
+      message.success("Edição concluída");
+
+      refresh();
+      close();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? `Erro ao editar: ${error.message}` : "Erro desconhecido ao editar a disciplina.";
+
+      message.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Modal
+      destroyOnClose
       title={disciplina ? "Editar: " + disciplina.nome : "Nova Disciplina"}
       open={open}
       onCancel={close}
       footer={null}
     >
-      <FormCadastroCurso disciplina={disciplina} loading={loading} onFinish={cadastrarDisciplina} />
+      <FormCadastroCurso
+        disciplina={disciplina}
+        buttonText={disciplina ? "Editar" : "Cadastrar"}
+        loading={loading}
+        onFinish={disciplina ? editarDisciplina : cadastrarDisciplina}
+      />
     </Modal>
   );
 }

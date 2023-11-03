@@ -1,43 +1,25 @@
-import { LeftOutlined } from "@ant-design/icons";
-import { Button, Collapse, CollapseProps, Tabs, message } from "antd";
+import { LeftOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { Button, Tabs, message } from "antd";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Page } from "../../components/Page";
 import { ApiService } from "../../services/api";
 import { Curso } from "./Cursos";
 import { FormCadastroCurso } from "./components/FormCadastroCurso";
-
-const MatrizSemestres = () => {
-  const items: CollapseProps["items"] = [
-    {
-      key: "1",
-      label: "Semestre 1",
-      children: <p>ter</p>,
-    },
-    {
-      key: "2",
-      label: "Semestre 2",
-      children: <p>ter</p>,
-    },
-    {
-      key: "3",
-      label: "Semestre 3",
-      children: <p>ter</p>,
-    },
-  ];
-  return (
-    <div>
-      {" "}
-      <Collapse items={items} defaultActiveKey={["1"]} />{" "}
-    </div>
-  );
-};
+import { MatrizSemestres } from "./components/MatrizSemestres";
+import { Matrizes } from "./components/Matrizes";
+import { ModalCadastroMatriz } from "./components/ModalCadastroMatriz";
 
 export const CursoEdicao = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [curso, setCurso] = useState<Curso>();
   const [loading, setLoading] = useState(false);
+  const [modalMatriz, setModalMatriz] = useState(false);
+
+  const currentTab = location.hash.slice(1) || "dadosGerais";
 
   const fetchCursos = async () => {
     setLoading(true);
@@ -75,6 +57,10 @@ export const CursoEdicao = () => {
     fetchCursos();
   }, []);
 
+  const handleTabChange = (activeKey: string) => {
+    navigate(`${location.pathname}#${activeKey}`);
+  };
+
   return (
     <Page
       loading={loading}
@@ -86,21 +72,42 @@ export const CursoEdicao = () => {
       }
     >
       <Tabs
-        type="line"
+        tabBarExtraContent={
+          <Button onClick={() => setModalMatriz(true)} icon={<PlusCircleOutlined />}>
+            {currentTab == "matrizAtual" ? "Novo Semestre" : "Nova matriz"}
+          </Button>
+        }
+        type="card"
+        activeKey={currentTab}
+        onChange={handleTabChange}
         items={[
           {
+            key: "dadosGerais",
             label: "Dados Gerais",
             children: (
               <FormCadastroCurso curso={curso} loading={loading} onFinish={updateCurso} buttonText="Atualizar" />
             ),
           },
-          { label: "Matriz", children: <MatrizSemestres /> },
-        ].map(({ label, children }) => ({
+          { key: "matrizAtual", label: "Matriz Atual", children: <MatrizSemestres matriz={curso?.matrizAtual} /> },
+          {
+            key: "matrizes",
+            label: "Matrizes",
+            children: <Matrizes curso={curso} />,
+          },
+        ].map(({ key, label, children }) => ({
           label,
-          key: label,
+          key,
           children,
         }))}
       />
+      {curso && (
+        <ModalCadastroMatriz
+          curso={curso}
+          open={modalMatriz}
+          close={() => setModalMatriz(false)}
+          refresh={fetchCursos}
+        />
+      )}
     </Page>
   );
 };

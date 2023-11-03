@@ -2,15 +2,14 @@ import {
   CalendarOutlined,
   ClockCircleOutlined,
   DeleteOutlined,
-  EditOutlined,
-  SettingOutlined
+  EditOutlined
 } from "@ant-design/icons";
 import { Avatar, Button, Card, Rate, Tag, Typography, theme } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ModalDelete } from "../../../components/ModalDelete";
-import { getSigla, semestresParaAnos } from "../../../utils/curso";
-import { Curso } from "../Cursos";
+import { Curso } from "../pages/Cursos/Cursos";
+import { getSigla, semestresParaAnos } from "../utils/curso";
+import { ModalDelete } from "./ModalDelete";
 
 export interface CardCursoProps {
   curso: Curso;
@@ -32,7 +31,6 @@ export function CardCurso({ curso }: CardCursoProps) {
       hoverable
       bodyStyle={{ height: 200 }}
       actions={[
-        <SettingOutlined key="setting" />,
         <Button type="link" onClick={() => navigate(`/cursos/${curso.id}`)}>
           <EditOutlined key="edit" />
         </Button>,

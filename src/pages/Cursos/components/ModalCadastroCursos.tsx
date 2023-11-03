@@ -33,7 +33,7 @@ export function ModalCadastroCursos({ open, close, refresh }: ModalCadastroCurso
   };
 
   return (
-    <Modal title="Novo Curso" open={open} onCancel={close} footer={null}>
+    <Modal destroyOnClose title="Novo Curso" open={open} onCancel={close} footer={null}>
       <FormCadastroCurso loading={loading} onFinish={cadastrarCurso} />
     </Modal>
   );

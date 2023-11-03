@@ -1,11 +1,13 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Space, Table, Tag, message } from "antd";
+import { Button, Grid, Space, Table, Tag, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { PaginationProps } from "antd/lib";
 import { useEffect, useState } from "react";
 import { Page } from "../../components/Page";
 import { ApiService } from "../../services/api";
 import { ModalCadastroDisciplinas } from "./components/ModalCadastroDisciplinas";
+
+const { useBreakpoint } = Grid;
 
 export interface Disciplina {
   id: number;
@@ -30,6 +32,7 @@ export const Disciplinas = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [disciplinaEdit, setDisciplinaEdit] = useState<Disciplina | undefined>();
+  const screens = useBreakpoint();
 
   const fetchDisciplinas = async () => {
     setLoading(true);
@@ -65,25 +68,27 @@ export const Disciplinas = () => {
       title: "Carga Horária",
       dataIndex: "cargaHoraria",
       key: "cargaHoraria",
+      responsive: ["md"],
       render: (ch) => <Tag color={mapCargaHorariaToColor(ch)}>{ch}H</Tag>,
     },
     {
       title: "Descrição",
       dataIndex: "descricao",
       key: "descricao",
+      responsive: ["lg"],
     },
 
     {
       title: "Ações",
       key: "action",
       render: (record) => (
-        <Space size="middle">
+        <Space size="small">
           <Button type="link" onClick={() => prepareDisciplinaEdit(record)}>
-            <EditOutlined key="edit" /> editar
+            <EditOutlined key="edit" /> {screens.md && "editar"}
           </Button>
 
           <Button danger type="text">
-            <DeleteOutlined key="delete" /> apagar
+            <DeleteOutlined key="delete" /> {screens.md && "apagar"}
           </Button>
         </Space>
       ),

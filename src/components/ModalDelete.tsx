@@ -14,6 +14,7 @@ interface ModalDeleteProps {
 export const ModalDelete = ({ open, onOk, onCancel, text }: ModalDeleteProps) => {
   return (
     <Modal
+      destroyOnClose
       title={
         <Typography.Title type="danger" level={4} style={{ margin: 0 }}>
           <WarningOutlined /> Confirmação de Exclusão
