@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Row, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import axios, { AxiosError } from "axios";
+import { Button, Col, Row, message } from "antd";
+import { useEffect, useState } from "react";
 import { Page } from "../../components/Page";
-import { handleApiError } from "../../handleApiError";
+import { ApiService } from "../../services/api";
 import { CardCurso } from "./components/CardCurso";
 import { ModalCadastroCursos } from "./components/ModalCadastroCursos";
 
@@ -20,25 +19,19 @@ export const Cursos = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [messageApi, contextHolder] = message.useMessage();
-
   const fetchCursos = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:8080/cursos");
-      setCursos(response.data);
+      const response = await ApiService.get("/cursos");
+      setCursos(response?.data);
     } catch (error) {
-      handleFetchCursosError(error);
+      const errorMessage =
+        error instanceof Error ? `Erro ao buscar: ${error.message}` : "Erro desconhecido ao buscar os cursos.";
+
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFetchCursosError = (error: unknown) => {
-    messageApi.open({
-      type: "error",
-      content: handleApiError(error as AxiosError),
-    });
   };
 
   useEffect(() => {
@@ -55,10 +48,9 @@ export const Cursos = () => {
         </Button>
       }
     >
-      {contextHolder}
       <Row gutter={[32, 32]}>
         {cursos.map((curso) => (
-          <Col span={8} key={curso?.id}>
+          <Col lg={8} md={12} sm={24} key={curso?.id}>
             <CardCurso curso={curso} />
           </Col>
         ))}

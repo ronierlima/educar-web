@@ -1,7 +1,6 @@
 import { Modal, message } from "antd";
-import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { handleApiError } from "../../../handleApiError";
+import { ApiService } from "../../../services/api";
 import { Curso } from "../Cursos";
 import { FormCadastroCurso } from "./FormCadastroCurso";
 
@@ -13,25 +12,21 @@ export interface ModalCadastroCursosProps {
 
 export function ModalCadastroCursos({ open, close, refresh }: ModalCadastroCursosProps) {
   const [loading, setLoading] = useState<boolean>(false);
-  const [messageApi, contextHolder] = message.useMessage();
 
   const cadastrarCurso = async (values: Curso) => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:8080/cursos", values);
+      await ApiService.post("/cursos", values);
 
-      messageApi.open({
-        type: "success",
-        content: "cadastro realizado",
-      });
+      message.success("cadastro realizado");
 
       refresh();
       close();
     } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: handleApiError(error as AxiosError),
-      });
+      const errorMessage =
+        error instanceof Error ? `Erro ao cadastrar: ${error.message}` : "Erro desconhecido ao cadastrar o curso.";
+
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -39,7 +34,6 @@ export function ModalCadastroCursos({ open, close, refresh }: ModalCadastroCurso
 
   return (
     <Modal title="Novo Curso" open={open} onCancel={close} footer={null}>
-      {contextHolder}
       <FormCadastroCurso loading={loading} onFinish={cadastrarCurso} />
     </Modal>
   );

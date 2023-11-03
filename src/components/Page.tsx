@@ -1,4 +1,4 @@
-import { Card, Skeleton } from "antd";
+import { Card, Skeleton, Watermark } from "antd";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 
@@ -20,35 +20,40 @@ export function Page({
   children,
 }: PageProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "2rem",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        height: "100vh",
-        padding: "0 2rem",
-      }}
-    >
-      {showHeader ? <Header /> : <span />}
-
-      <Card
-        title={loading ? <Skeleton.Input active={loading} /> : pageTitle || "Página"}
-        extra={pageExtra}
-        bordered={false}
-        style={{ flexGrow: 1 }}
+    <Watermark content="">
+      <div
+        className="page"
+        style={{
+          display: "flex",
+          gap: "2rem",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "0",
+        }}
       >
-        {loading ? (
-          <>
-            <Skeleton active />
-            <Skeleton active />
-          </>
-        ) : (
-          children
-        )}
-      </Card>
+        {showHeader ? <Header /> : <span />}
+        <main style={{ padding: "0 20px" }}>
+          <Card
+            title={loading ? <Skeleton.Input active={loading} /> : pageTitle || "Página"}
+            extra={loading ? <Skeleton.Button active={loading} /> : pageExtra}
+            bordered={false}
+            headStyle={{ background: "#799ff94c" }}
+            bodyStyle={{ background: "#799ff93d" }}
+          >
+            {loading ? (
+              <>
+                <Skeleton active />
+                <Skeleton active />
+              </>
+            ) : (
+              children
+            )}
+          </Card>
+        </main>
 
-      {showFooter ? <Footer /> : <span />}
-    </div>
+        {showFooter ? <Footer /> : <span />}
+
+      </div>  
+    </Watermark>
   );
 }

@@ -1,14 +1,16 @@
 import {
   CalendarOutlined,
   ClockCircleOutlined,
+  DeleteOutlined,
   EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
+  SettingOutlined
 } from "@ant-design/icons";
-import { Avatar, Card, Rate, Tag, Typography, theme } from "antd";
+import { Avatar, Button, Card, Rate, Tag, Typography, theme } from "antd";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ModalDelete } from "../../../components/ModalDelete";
 import { getSigla, semestresParaAnos } from "../../../utils/curso";
 import { Curso } from "../Cursos";
-import { useNavigate } from "react-router-dom";
 
 export interface CardCursoProps {
   curso: Curso;
@@ -20,14 +22,23 @@ export function CardCurso({ curso }: CardCursoProps) {
   const { token } = useToken();
   const navigate = useNavigate();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleDelete = () => {
+    setIsModalOpen(true);
+  };
   return (
     <Card
       hoverable
       bodyStyle={{ height: 200 }}
       actions={[
         <SettingOutlined key="setting" />,
-        <EllipsisOutlined key="ellipsis" />,
-        <EditOutlined key="edit" onClick={() => navigate(`/cursos/${curso.id}`)} />,
+        <Button type="link" onClick={() => navigate(`/cursos/${curso.id}`)}>
+          <EditOutlined key="edit" />
+        </Button>,
+        <Button danger type="text" onClick={handleDelete}>
+          <DeleteOutlined key="delete" />
+        </Button>,
       ]}
     >
       <Card.Meta
@@ -37,12 +48,12 @@ export function CardCurso({ curso }: CardCursoProps) {
       />
 
       <Typography.Paragraph ellipsis={{ rows: 2 }}>{curso.descricao}</Typography.Paragraph>
-      <Tag color="blue">
-        <CalendarOutlined /> {semestresParaAnos(curso?.semestres)} anos
+      <Tag icon={<CalendarOutlined />} color="blue">
+        {semestresParaAnos(curso?.semestres)} anos
       </Tag>
-      <Tag>
-        <ClockCircleOutlined /> {curso?.cargaHoraria}H
-      </Tag>
+      <Tag icon={<ClockCircleOutlined />}>{curso?.cargaHoraria}H</Tag>
+
+      <ModalDelete open={isModalOpen} text="este curso" onOk={() => {}} onCancel={() => setIsModalOpen(false)} />
     </Card>
   );
 }
