@@ -39,7 +39,7 @@ export function FormCadastroSemestre({
           <Form.Item label="Número do Semestre" name="semestre" rules={[{ required: true }]}>
             <Select>
               {steps?.map((step) => (
-                <Select.Option disabled={isSemestreInMatriz(step)} value={true} key={step}>
+                <Select.Option disabled={isSemestreInMatriz(step)} value={step} key={step}>
                   {step}
                 </Select.Option>
               ))}
