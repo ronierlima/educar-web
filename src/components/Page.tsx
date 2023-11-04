@@ -36,9 +36,6 @@ export function Page({
           <Card
             title={loading ? <Skeleton.Input active={loading} /> : pageTitle || "Página"}
             extra={loading ? <Skeleton.Button active={loading} /> : pageExtra}
-            bordered={false}
-            headStyle={{ background: "#799ff94c" }}
-            bodyStyle={{ background: "#799ff93d" }}
           >
             {loading ? (
               <>

@@ -9,6 +9,7 @@ import { FormCadastroCurso } from "./components/FormCadastroCurso";
 import { MatrizSemestres } from "./components/MatrizSemestres";
 import { Matrizes } from "./components/Matrizes";
 import { ModalCadastroMatriz } from "./components/ModalCadastroMatriz";
+import { ModalCadastroSemestre } from "./components/ModalCadastroSemestre";
 
 export const CursoEdicao = () => {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export const CursoEdicao = () => {
   const [curso, setCurso] = useState<Curso>();
   const [loading, setLoading] = useState(false);
   const [modalMatriz, setModalMatriz] = useState(false);
+  const [modalSemestre, setModalSemestre] = useState(false);
 
   const currentTab = location.hash.slice(1) || "dadosGerais";
 
@@ -41,8 +43,8 @@ export const CursoEdicao = () => {
   const updateCurso = async (values: Curso) => {
     setLoading(true);
     try {
-      const response = await ApiService.put(`/cursos/${id}`, values);
-      setCurso(response?.data);
+      await ApiService.put(`/cursos/${id}`, values);
+      fetchCursos();
       message.success("Curso atualizado com sucesso");
     } catch (error) {
       const errorMessage =
@@ -61,6 +63,19 @@ export const CursoEdicao = () => {
     navigate(`${location.pathname}#${activeKey}`);
   };
 
+  const tabBarExtraContent: { [key: string]: JSX.Element } = {
+    matrizAtual: (
+      <Button type="primary" onClick={() => setModalSemestre(true)} icon={<PlusCircleOutlined />}>
+        Novo Semestre
+      </Button>
+    ),
+    matrizes: (
+      <Button type="primary" onClick={() => setModalMatriz(true)} icon={<PlusCircleOutlined />}>
+        Nova matriz
+      </Button>
+    ),
+  };
+
   return (
     <Page
       loading={loading}
@@ -71,42 +86,48 @@ export const CursoEdicao = () => {
         </Button>
       }
     >
-      <Tabs
-        tabBarExtraContent={
-          <Button onClick={() => setModalMatriz(true)} icon={<PlusCircleOutlined />}>
-            {currentTab == "matrizAtual" ? "Novo Semestre" : "Nova matriz"}
-          </Button>
-        }
-        type="card"
-        activeKey={currentTab}
-        onChange={handleTabChange}
-        items={[
-          {
-            key: "dadosGerais",
-            label: "Dados Gerais",
-            children: (
-              <FormCadastroCurso curso={curso} loading={loading} onFinish={updateCurso} buttonText="Atualizar" />
-            ),
-          },
-          { key: "matrizAtual", label: "Matriz Atual", children: <MatrizSemestres matriz={curso?.matrizAtual} /> },
-          {
-            key: "matrizes",
-            label: "Matrizes",
-            children: <Matrizes curso={curso} />,
-          },
-        ].map(({ key, label, children }) => ({
-          label,
-          key,
-          children,
-        }))}
-      />
       {curso && (
-        <ModalCadastroMatriz
-          curso={curso}
-          open={modalMatriz}
-          close={() => setModalMatriz(false)}
-          refresh={fetchCursos}
-        />
+        <>
+          <Tabs
+            tabBarExtraContent={tabBarExtraContent[currentTab]}
+            type="card"
+            activeKey={currentTab}
+            onChange={handleTabChange}
+            items={[
+              {
+                key: "dadosGerais",
+                label: "Dados Gerais",
+                children: (
+                  <FormCadastroCurso curso={curso} loading={loading} onFinish={updateCurso} buttonText="Atualizar" />
+                ),
+              },
+              curso?.matrizAtual && {
+                key: "matrizAtual",
+                label: "Matriz Atual",
+                children: <MatrizSemestres curso={curso} matriz={curso?.matrizAtual} />,
+              },
+              {
+                key: "matrizes",
+                label: "Matrizes",
+                children: <Matrizes curso={curso} />,
+              },
+            ]}
+          />
+
+          <ModalCadastroMatriz
+            curso={curso}
+            open={modalMatriz}
+            close={() => setModalMatriz(false)}
+            refresh={fetchCursos}
+          />
+          <ModalCadastroSemestre
+            matriz={curso?.matrizAtual}
+            curso={curso}
+            open={modalSemestre}
+            close={() => setModalSemestre(false)}
+            refresh={fetchCursos}
+          />
+        </>
       )}
     </Page>
   );

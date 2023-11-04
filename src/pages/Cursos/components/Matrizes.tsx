@@ -37,8 +37,6 @@ export const Matrizes = ({ curso }: MatrizesProps) => {
       )}
     />
   ) : (
-    <Empty imageStyle={{ height: 128 }} description={<span>Nenhuma matriz cadastrada</span>}>
-      <Button type="primary">Criar agora</Button>
-    </Empty>
+    <Empty imageStyle={{ height: 128 }} description={<span>Nenhuma matriz cadastrada</span>}></Empty>
   );
 };

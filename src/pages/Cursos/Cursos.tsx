@@ -17,6 +17,8 @@ export interface MatrizCurricular {
   descricao: string;
   atual: boolean;
   totalDisciplinas: number;
+  totalCargaHoraria: number;
+  numeroSemestres: number;
   semestres: Array<Semestre>;
 }
 
@@ -65,7 +67,7 @@ export const Cursos = () => {
       }
     >
       <Row gutter={[32, 32]}>
-        {cursos.map((curso) => (
+        {cursos?.map((curso) => (
           <Col lg={8} md={12} sm={24} key={curso?.id}>
             <CardCurso curso={curso} />
           </Col>

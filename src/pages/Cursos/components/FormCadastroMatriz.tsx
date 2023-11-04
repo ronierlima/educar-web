@@ -18,7 +18,7 @@ export function FormCadastroMatriz({ loading, buttonText, onFinish }: FormCadast
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label="Matriz atual?" name="titulacao" rules={[{ required: true }]}>
+          <Form.Item label="Matriz atual?" name="atual" rules={[{ required: true }]}>
             <Select>
               <Select.Option value={true}>Sim</Select.Option>
               <Select.Option value={false}>Não</Select.Option>
@@ -26,7 +26,7 @@ export function FormCadastroMatriz({ loading, buttonText, onFinish }: FormCadast
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label="Número de Semestres" name="semestres" rules={[{ required: true }]}>
+          <Form.Item label="Número de Semestres" name="numeroSemestres" rules={[{ required: true }]}>
             <InputNumber style={{ width: "100%" }} />
           </Form.Item>
         </Col>
