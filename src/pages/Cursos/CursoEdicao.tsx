@@ -1,5 +1,5 @@
 import { LeftOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { Button, Tabs, message } from "antd";
+import { Button, Grid, Tabs, message } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Page } from "../../components/Page";
@@ -11,10 +11,13 @@ import { Matrizes } from "./components/Matrizes";
 import { ModalCadastroMatriz } from "./components/ModalCadastroMatriz";
 import { ModalCadastroSemestre } from "./components/ModalCadastroSemestre";
 
+const { useBreakpoint } = Grid;
+
 export const CursoEdicao = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const screens = useBreakpoint();
 
   const [curso, setCurso] = useState<Curso>();
   const [loading, setLoading] = useState(false);
@@ -55,6 +58,21 @@ export const CursoEdicao = () => {
     }
   };
 
+  const removerSemestre = async (matrizId: number, semestreId: number) => {
+    setLoading(true);
+    try {
+      await ApiService.delete(`/matrizes/${matrizId}/semestres/${semestreId}`);
+      message.success("Semestre removido com sucesso!");
+      fetchCursos();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? `Erro ao remover: ${error.message}` : "Erro desconhecido ao remover o semestre.";
+      message.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const removerDisciplina = async (matrizId: number, semestreId: number, disciplinaId: number) => {
     setLoading(true);
     try {
@@ -81,12 +99,12 @@ export const CursoEdicao = () => {
   const tabBarExtraContent: { [key: string]: JSX.Element } = {
     matrizAtual: (
       <Button type="primary" onClick={() => setModalSemestre(true)} icon={<PlusCircleOutlined />}>
-        Novo Semestre
+        {screens.xs ? null : "Novo Semestre"}
       </Button>
     ),
     matrizes: (
       <Button type="primary" onClick={() => setModalMatriz(true)} icon={<PlusCircleOutlined />}>
-        Nova matriz
+        {screens.xs ? null : "Nova matriz"}
       </Button>
     ),
   };
@@ -120,7 +138,12 @@ export const CursoEdicao = () => {
                 key: "matrizAtual",
                 label: "Matriz Atual",
                 children: (
-                  <MatrizSemestres curso={curso} matriz={curso?.matrizAtual} removerDisciplina={removerDisciplina} />
+                  <MatrizSemestres
+                    curso={curso}
+                    matriz={curso?.matrizAtual}
+                    removerSemestre={removerSemestre}
+                    removerDisciplina={removerDisciplina}
+                  />
                 ),
               },
               {
@@ -137,6 +160,7 @@ export const CursoEdicao = () => {
             close={() => setModalMatriz(false)}
             refresh={fetchCursos}
           />
+          
           <ModalCadastroSemestre
             matriz={curso?.matrizAtual}
             curso={curso}

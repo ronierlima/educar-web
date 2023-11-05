@@ -52,6 +52,22 @@ export const Cursos = () => {
     }
   };
 
+  const removeCurso = async (cursoId: number) => {
+    setLoading(true);
+    try {
+      await ApiService.delete(`/cursos/${cursoId}`);
+
+      message.success("Curso removido com sucesso!");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? `Erro ao remover: ${error.message}` : "Erro desconhecido ao remover curso.";
+      message.error(errorMessage);
+    } finally {
+      setLoading(false);
+      fetchCursos();
+    }
+  };
+
   useEffect(() => {
     fetchCursos();
   }, []);
@@ -69,7 +85,7 @@ export const Cursos = () => {
       <Row gutter={[32, 32]}>
         {cursos?.map((curso) => (
           <Col lg={8} md={12} sm={24} key={curso?.id}>
-            <CardCurso curso={curso} />
+            <CardCurso curso={curso} removeCurso={removeCurso} />
           </Col>
         ))}
       </Row>

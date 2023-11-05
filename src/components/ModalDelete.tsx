@@ -1,8 +1,5 @@
-import React from "react";
-
-// import { Container } from './styles';
-import { Alert, Modal, Typography } from "antd";
 import { WarningOutlined } from "@ant-design/icons";
+import { Alert, Modal, Typography } from "antd";
 
 interface ModalDeleteProps {
   open: boolean;

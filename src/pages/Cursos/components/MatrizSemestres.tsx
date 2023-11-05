@@ -1,19 +1,25 @@
-import { CaretRightOutlined, MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { Button, Col, Collapse, Descriptions, Empty, Flex, Progress, Row, Tag, theme } from "antd";
+import { CaretRightOutlined, DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { Button, Col, Collapse, Descriptions, Empty, Flex, Grid, Progress, Row, Space, Tag, theme } from "antd";
+import { useState } from "react";
 import { CardDisciplina } from "../../../components/CardDisciplina";
 import { Escala } from "../../../components/Escala";
-import { Curso, MatrizCurricular } from "../Cursos";
-import { useState } from "react";
 import { ModalDelete } from "../../../components/ModalDelete";
+import { Curso, MatrizCurricular } from "../Cursos";
 
 interface MatrizSemestresProps {
   matriz: MatrizCurricular;
   curso: Curso;
-  removerDisciplina: (matrizId: number, semestreId: number, disciplinaId: number) => void;
+  removerSemestre?: (matrizId: number, semestreId: number) => void;
+  removerDisciplina?: (matrizId: number, semestreId: number, disciplinaId: number) => void;
 }
 
-export const MatrizSemestres = ({ matriz, curso, removerDisciplina }: MatrizSemestresProps) => {
+const { useBreakpoint } = Grid;
+
+export const MatrizSemestres = ({ matriz, curso, removerDisciplina, removerSemestre }: MatrizSemestresProps) => {
   const { token } = theme.useToken();
+  const screens = useBreakpoint();
+
+  const [isModalOpenSemestre, setIsModalOpenSemestre] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [semestreId, setSemestreId] = useState<number>();
   const [disciplinaId, setDisciplinaId] = useState<number>();
@@ -63,17 +69,19 @@ export const MatrizSemestres = ({ matriz, curso, removerDisciplina }: MatrizSeme
               <CardDisciplina
                 disciplina={disciplina}
                 actions={[
-                  <Button
-                    danger
-                    type="text"
-                    onClick={() => {
-                      setIsModalOpen(true);
-                      setSemestreId(semestre.id);
-                      setDisciplinaId(disciplina.id);
-                    }}
-                  >
-                    <MinusCircleOutlined /> Remover
-                  </Button>,
+                  removerDisciplina && (
+                    <Button
+                      danger
+                      type="text"
+                      onClick={() => {
+                        setIsModalOpen(true);
+                        setSemestreId(semestre.id);
+                        setDisciplinaId(disciplina.id);
+                      }}
+                    >
+                      <MinusCircleOutlined /> Remover
+                    </Button>
+                  ),
                 ]}
               />
             </Col>
@@ -84,9 +92,28 @@ export const MatrizSemestres = ({ matriz, curso, removerDisciplina }: MatrizSeme
       ),
       style: panelStyle,
       extra: (
-        <Button type="primary" icon={<PlusCircleOutlined />} onClick={(e) => e.stopPropagation()}>
-          Nova disciplina
-        </Button>
+        <Space>
+          {removerDisciplina && (
+            <Button type="dashed" icon={<PlusCircleOutlined />} onClick={(e) => e.stopPropagation()}>
+              {screens.xs ? null : "Nova disciplina"}
+            </Button>
+          )}
+
+          {removerSemestre && (
+            <Button
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsModalOpenSemestre(true);
+                setSemestreId(semestre.id);
+              }}
+            >
+              {screens.xs ? null : "Remover Semestre"}
+            </Button>
+          )}
+        </Space>
       ),
     }));
   };
@@ -105,12 +132,22 @@ export const MatrizSemestres = ({ matriz, curso, removerDisciplina }: MatrizSeme
         expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
         items={getItemsColapse()}
       />
-      <ModalDelete
-        open={isModalOpen}
-        text="esta disciplina"
-        onOk={() => semestreId && disciplinaId && removerDisciplina(matriz.id, semestreId, disciplinaId)}
-        onCancel={() => setIsModalOpen(false)}
-      />
+      {removerDisciplina && (
+        <ModalDelete
+          open={isModalOpen}
+          text="esta disciplina"
+          onOk={() => semestreId && disciplinaId && removerDisciplina(matriz.id, semestreId, disciplinaId)}
+          onCancel={() => setIsModalOpen(false)}
+        />
+      )}
+      {removerSemestre && (
+        <ModalDelete
+          open={isModalOpenSemestre}
+          text="este semestre"
+          onOk={() => semestreId && removerSemestre(matriz.id, semestreId)}
+          onCancel={() => setIsModalOpenSemestre(false)}
+        />
+      )}
     </Flex>
   ) : (
     <Empty imageStyle={{ height: 128 }} description={<span>Nenhuma matriz cadastrada</span>}></Empty>

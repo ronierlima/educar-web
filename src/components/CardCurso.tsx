@@ -1,9 +1,4 @@
-import {
-  CalendarOutlined,
-  ClockCircleOutlined,
-  DeleteOutlined,
-  EditOutlined
-} from "@ant-design/icons";
+import { CalendarOutlined, ClockCircleOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Rate, Tag, Typography, theme } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,11 +8,12 @@ import { ModalDelete } from "./ModalDelete";
 
 export interface CardCursoProps {
   curso: Curso;
+  removeCurso: (cursoId: number) => void;
 }
 
 const { useToken } = theme;
 
-export function CardCurso({ curso }: CardCursoProps) {
+export function CardCurso({ curso, removeCurso }: CardCursoProps) {
   const { token } = useToken();
   const navigate = useNavigate();
 
@@ -26,6 +22,7 @@ export function CardCurso({ curso }: CardCursoProps) {
   const handleDelete = () => {
     setIsModalOpen(true);
   };
+
   return (
     <Card
       hoverable
@@ -51,7 +48,12 @@ export function CardCurso({ curso }: CardCursoProps) {
       </Tag>
       <Tag icon={<ClockCircleOutlined />}>{curso?.cargaHoraria}H</Tag>
 
-      <ModalDelete open={isModalOpen} text="este curso" onOk={() => {}} onCancel={() => setIsModalOpen(false)} />
+      <ModalDelete
+        open={isModalOpen}
+        text="este curso"
+        onOk={() => removeCurso(curso.id)}
+        onCancel={() => setIsModalOpen(false)}
+      />
     </Card>
   );
 }
