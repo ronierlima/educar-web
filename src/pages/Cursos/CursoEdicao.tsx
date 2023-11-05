@@ -141,6 +141,7 @@ export const CursoEdicao = () => {
                   <MatrizSemestres
                     curso={curso}
                     matriz={curso?.matrizAtual}
+                    refresh={fetchCursos}
                     removerSemestre={removerSemestre}
                     removerDisciplina={removerDisciplina}
                   />
@@ -160,7 +161,7 @@ export const CursoEdicao = () => {
             close={() => setModalMatriz(false)}
             refresh={fetchCursos}
           />
-          
+
           <ModalCadastroSemestre
             matriz={curso?.matrizAtual}
             curso={curso}

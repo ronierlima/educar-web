@@ -1,27 +1,54 @@
-import { CaretRightOutlined, DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { Button, Col, Collapse, Descriptions, Empty, Flex, Grid, Progress, Row, Space, Tag, theme } from "antd";
+import { CaretRightOutlined, DeleteOutlined, EditOutlined, MinusCircleOutlined, SaveOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Col,
+  Collapse,
+  Descriptions,
+  Drawer,
+  Empty,
+  Flex,
+  Grid,
+  Progress,
+  Row,
+  Space,
+  Tag,
+  message,
+  theme,
+} from "antd";
 import { useState } from "react";
 import { CardDisciplina } from "../../../components/CardDisciplina";
 import { Escala } from "../../../components/Escala";
 import { ModalDelete } from "../../../components/ModalDelete";
-import { Curso, MatrizCurricular } from "../Cursos";
+import { Curso, MatrizCurricular, Semestre } from "../Cursos";
+import { FormEditarSemestre } from "./FormEditarSemestre";
+import { ApiService } from "../../../services/api";
 
 interface MatrizSemestresProps {
   matriz: MatrizCurricular;
   curso: Curso;
+  refresh?: () => void;
   removerSemestre?: (matrizId: number, semestreId: number) => void;
   removerDisciplina?: (matrizId: number, semestreId: number, disciplinaId: number) => void;
 }
 
 const { useBreakpoint } = Grid;
 
-export const MatrizSemestres = ({ matriz, curso, removerDisciplina, removerSemestre }: MatrizSemestresProps) => {
+export const MatrizSemestres = ({
+  matriz,
+  curso,
+  removerDisciplina,
+  removerSemestre,
+  refresh,
+}: MatrizSemestresProps) => {
   const { token } = theme.useToken();
   const screens = useBreakpoint();
 
   const [isModalOpenSemestre, setIsModalOpenSemestre] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [semestreId, setSemestreId] = useState<number>();
+  const [semestre, setSemestre] = useState<Semestre>();
   const [disciplinaId, setDisciplinaId] = useState<number>();
 
   const panelStyle: React.CSSProperties = {
@@ -93,11 +120,17 @@ export const MatrizSemestres = ({ matriz, curso, removerDisciplina, removerSemes
       style: panelStyle,
       extra: (
         <Space>
-          {removerDisciplina && (
-            <Button type="dashed" icon={<PlusCircleOutlined />} onClick={(e) => e.stopPropagation()}>
-              {screens.xs ? null : "Nova disciplina"}
-            </Button>
-          )}
+          <Button
+            type="dashed"
+            icon={<EditOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSemestre(semestre);
+              setOpen(true);
+            }}
+          >
+            {screens.xs ? null : "Editar Semestre"}
+          </Button>
 
           {removerSemestre && (
             <Button
@@ -116,6 +149,23 @@ export const MatrizSemestres = ({ matriz, curso, removerDisciplina, removerSemes
         </Space>
       ),
     }));
+  };
+
+  const updateSemestre = async (semestre: Semestre) => {
+    setLoading(true);
+    try {
+      await ApiService.put(`/matrizes/${matriz.id}/semestres/${semestre.id}`, semestre);
+      refresh && refresh();
+      message.success("Semestre atualizado com sucesso!");
+      setOpen(false);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? `Erro ao editar: ${error.message}` : "Erro desconhecido ao buscar as disciplinas.";
+
+      message.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return matriz ? (
@@ -147,6 +197,23 @@ export const MatrizSemestres = ({ matriz, curso, removerDisciplina, removerSemes
           onOk={() => semestreId && removerSemestre(matriz.id, semestreId)}
           onCancel={() => setIsModalOpenSemestre(false)}
         />
+      )}
+
+      {semestre && (
+        <Drawer
+          destroyOnClose
+          title={`Editar ${semestre.semestre}º Semestre da matriz ${matriz.descricao}`}
+          open={open}
+          onClose={() => setOpen(false)}
+          width="80vw"
+          extra={
+            <Button loading={loading} icon={<SaveOutlined />} onClick={() => updateSemestre(semestre)} type="primary">
+              {screens.xs ? null : "Atualizar"}
+            </Button>
+          }
+        >
+          <FormEditarSemestre semestre={semestre} setSemestre={setSemestre} />
+        </Drawer>
       )}
     </Flex>
   ) : (
