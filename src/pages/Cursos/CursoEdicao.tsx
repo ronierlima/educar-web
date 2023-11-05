@@ -55,6 +55,21 @@ export const CursoEdicao = () => {
     }
   };
 
+  const removerDisciplina = async (matrizId: number, semestreId: number, disciplinaId: number) => {
+    setLoading(true);
+    try {
+      await ApiService.delete(`/matrizes/${matrizId}/semestres/${semestreId}/disciplinas/${disciplinaId}`);
+      message.success("Disciplina removida com sucesso!");
+      fetchCursos();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? `Erro ao remover: ${error.message}` : "Erro desconhecido ao remover a disciplina.";
+      message.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchCursos();
   }, []);
@@ -104,7 +119,9 @@ export const CursoEdicao = () => {
               curso?.matrizAtual && {
                 key: "matrizAtual",
                 label: "Matriz Atual",
-                children: <MatrizSemestres curso={curso} matriz={curso?.matrizAtual} />,
+                children: (
+                  <MatrizSemestres curso={curso} matriz={curso?.matrizAtual} removerDisciplina={removerDisciplina} />
+                ),
               },
               {
                 key: "matrizes",
