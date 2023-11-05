@@ -3,6 +3,8 @@ import { Button, Col, Collapse, Descriptions, Empty, Flex, Progress, Row, Tag, t
 import { CardDisciplina } from "../../../components/CardDisciplina";
 import { Escala } from "../../../components/Escala";
 import { Curso, MatrizCurricular } from "../Cursos";
+import { useState } from "react";
+import { ModalDelete } from "../../../components/ModalDelete";
 
 interface MatrizSemestresProps {
   matriz: MatrizCurricular;
@@ -12,6 +14,9 @@ interface MatrizSemestresProps {
 
 export const MatrizSemestres = ({ matriz, curso, removerDisciplina }: MatrizSemestresProps) => {
   const { token } = theme.useToken();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [semestreId, setSemestreId] = useState<number>();
+  const [disciplinaId, setDisciplinaId] = useState<number>();
 
   const panelStyle: React.CSSProperties = {
     marginBottom: 24,
@@ -58,7 +63,15 @@ export const MatrizSemestres = ({ matriz, curso, removerDisciplina }: MatrizSeme
               <CardDisciplina
                 disciplina={disciplina}
                 actions={[
-                  <Button danger type="text" onClick={() => removerDisciplina(matriz.id, semestre.id, disciplina.id)}>
+                  <Button
+                    danger
+                    type="text"
+                    onClick={() => {
+                      setIsModalOpen(true);
+                      setSemestreId(semestre.id);
+                      setDisciplinaId(disciplina.id);
+                    }}
+                  >
                     <MinusCircleOutlined /> Remover
                   </Button>,
                 ]}
@@ -91,6 +104,12 @@ export const MatrizSemestres = ({ matriz, curso, removerDisciplina }: MatrizSeme
         style={{ background: "transparent" }}
         expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
         items={getItemsColapse()}
+      />
+      <ModalDelete
+        open={isModalOpen}
+        text="esta disciplina"
+        onOk={() => semestreId && disciplinaId && removerDisciplina(matriz.id, semestreId, disciplinaId)}
+        onCancel={() => setIsModalOpen(false)}
       />
     </Flex>
   ) : (
