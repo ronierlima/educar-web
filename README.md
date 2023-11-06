@@ -19,7 +19,7 @@ Um projeto realizado como desafio técnico
 1. Clone o repositório:
 
    ```shell
-   git clone [https://github.com/seu-usuario/seu-projeto](https://github.com/ronierlima/educar-web).git
+   git clone https://github.com/ronierlima/educar-web.git
    cd educar-web
    ```
 
