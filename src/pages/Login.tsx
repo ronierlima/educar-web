@@ -58,8 +58,6 @@ export function Login() {
   };
 
   const handlePerfil = (perfil: string) => {
-    console.log("1", perfil);
-
     perfil && changeRole(perfil);
     setOpen(false);
   };
