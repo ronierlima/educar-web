@@ -1,6 +1,7 @@
 import { ReactNode, createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { jwtDecode } from "jwt-decode";
+import { message } from "antd";
 export interface User {
   id: number;
   nome: string;
@@ -45,8 +46,11 @@ export function UserProvider({ children }: UserProviderProps) {
 
   useEffect(() => {
     const token = localStorage.getItem("educar@token");
-    token && setToken(token);
     const user = localStorage.getItem("educar@user");
+
+    jwtVerificar(token);
+
+    token && setToken(token);
     user && setUser(JSON.parse(user));
   }, []);
 
@@ -89,6 +93,26 @@ export function UserProvider({ children }: UserProviderProps) {
 
   const getRole = () => {
     return localStorage.getItem("educar@perfil");
+  };
+
+  const jwtVerificar = (token: string | null) => {
+    try {
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        if (decodedToken.exp && currentTime > decodedToken.exp) {
+          logout();
+          message.error("Seu token expirou. Faça login novamente.");
+        }
+      } else {
+        logout();
+        message.error("Você não está autenticado. Faça login.");
+      }
+    } catch (error) {
+      logout();
+      message.error("Ocorreu um erro na verificação do token. Faça login novamente.");
+    }
   };
 
   return (

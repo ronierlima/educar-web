@@ -38,6 +38,8 @@ export function Router() {
 
   return (
     <Routes>
+      <Route path="/" element={<Login />} />
+
       <Route path="/login" element={<Login />} />
 
       {routes().map(({ path, element }) => (
