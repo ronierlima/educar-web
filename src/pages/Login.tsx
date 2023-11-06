@@ -22,10 +22,12 @@ export function Login() {
   const navigate = useNavigate();
   const { login, changeRole } = useUser();
 
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [perfis, setPerfis] = useState<string[]>([]);
 
   const onFinish = async (values: UserCrendentials) => {
+    setLoading(true);
     try {
       const response = await ApiService.post("/usuarios/login", values);
 
@@ -41,7 +43,7 @@ export function Login() {
 
       login(user, response?.data);
 
-      if (user.roles.length > 1) {
+      if (user?.roles?.length > 1) {
         setPerfis(user.roles);
         setOpen(true);
         return;
@@ -50,6 +52,8 @@ export function Login() {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,7 +90,7 @@ export function Login() {
 
               <Col span={24}>
                 <Form.Item>
-                  <Button block={true} type="primary" htmlType="submit">
+                  <Button loading={loading} block={true} type="primary" htmlType="submit">
                     Entrar
                   </Button>
                 </Form.Item>
