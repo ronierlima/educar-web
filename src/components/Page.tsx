@@ -20,21 +20,22 @@ export function Page({
   children,
 }: PageProps) {
   return (
-    <Watermark content="">
-      <div
-        className="page"
-        style={{
-          display: "flex",
-          gap: "2rem",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "0",
-        }}
-      >
-        {showHeader ? <Header /> : <span />}
+    <div
+      className="page"
+      style={{
+        display: "flex",
+        gap: "2rem",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
+      }}
+    >
+      {showHeader ? <Header /> : <span />}
+        
+      <Watermark content="Ronier Lima">
         <main style={{ padding: "0 20px" }}>
           <Card
-            title={loading ? <Skeleton.Input active={loading} /> : pageTitle || "Página"}
+            title={loading ? <Skeleton.Input active={loading} /> : pageTitle}
             extra={loading ? <Skeleton.Button active={loading} /> : pageExtra}
           >
             {loading ? (
@@ -47,10 +48,9 @@ export function Page({
             )}
           </Card>
         </main>
+      </Watermark>
 
-        {showFooter ? <Footer /> : <span />}
-
-      </div>  
-    </Watermark>
+      {showFooter ? <Footer /> : <span />}
+    </div>
   );
 }

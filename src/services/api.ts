@@ -1,7 +1,17 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080", // Substitua pela URL da sua API
+  baseURL: "http://localhost:8080",
+});
+
+api.interceptors.request.use((request) => {
+  const token = localStorage.getItem("educar@token");
+
+  if (token) {
+    request.headers.Authorization = `Bearer ${token}`;
+  }
+  
+  return request;
 });
 
 interface ApiError {
@@ -15,19 +25,18 @@ export const ApiService = {
   async get(endpoint: string): Promise<AxiosResponse | void> {
     return makeRequest("get", endpoint);
   },
-  
+
   async post(endpoint: string, data: unknown): Promise<AxiosResponse | void> {
     return makeRequest("post", endpoint, data);
   },
-  
+
   async put(endpoint: string, data: unknown): Promise<AxiosResponse | void> {
     return makeRequest("put", endpoint, data);
   },
-  
+
   async delete(endpoint: string): Promise<AxiosResponse | void> {
     return makeRequest("delete", endpoint);
-  }
-  
+  },
 };
 
 async function makeRequest(

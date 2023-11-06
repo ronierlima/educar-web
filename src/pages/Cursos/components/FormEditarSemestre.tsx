@@ -45,6 +45,7 @@ export const FormEditarSemestre = ({ semestre, setSemestre }: FormEditarSemestre
   return (
     <Spin spinning={loading}>
       <Row gutter={[32, 32]}>
+        
         <Col span="24">
           <Select
             mode="multiple"
