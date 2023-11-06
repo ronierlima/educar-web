@@ -5,7 +5,7 @@ import { useUser } from "../context/UserContext";
 
 export function Header() {
   const navigate = useNavigate();
-  const { getRole } = useUser();
+  const { getRole, user, logout } = useUser();
 
   const getMenu = () => {
     switch (getRole()) {
@@ -13,12 +13,20 @@ export function Header() {
         return [
           {
             label: "Curso",
-            key: "/cursos",
+            key: "/cursos/" + user?.curso_id,
             icon: <BookOutlined />,
           },
         ];
 
       case "PROFESSOR":
+        return [
+          {
+            label: "Curso",
+            key: "/cursos/" + user?.curso_id,
+            icon: <BookOutlined />,
+          },
+        ];
+      case "COORDENADOR":
         return [
           {
             label: "Cursos",
@@ -31,23 +39,47 @@ export function Header() {
             icon: <ReadOutlined />,
           },
         ];
+      case "ADMIN":
+        return [
+          {
+            label: "Cursos",
+            key: "/cursos",
+            icon: <BookOutlined />,
+          },
+          {
+            label: "Disciplinas",
+            key: "/disciplinas",
+            icon: <ReadOutlined />,
+          },
+          {
+            label: "Usuários",
+            key: "/usuarios",
+            icon: <UserOutlined />,
+          },
+        ];
     }
 
     return [];
   };
   return (
     <header style={{ display: "flex", alignItems: "center", background: "#ffffff" }}>
-      <Avatar size={32}>T</Avatar>
+      <Avatar size={32}>{user?.nome[0]}</Avatar>
 
       <Menu
         style={{ minWidth: 0, flex: "auto", display: "flex", justifyContent: "flex-end" }}
-        onClick={({ key }) => navigate(key)}
+        onClick={({ key }) => {
+          if (key == "logout") {
+            logout();
+          } else {
+            navigate(key);
+          }
+        }}
         mode="horizontal"
         items={[
           ...getMenu(),
           {
-            label: "Perfil",
-            key: "/perfil",
+            label: "Sair",
+            key: "logout",
             icon: <UserOutlined />,
           },
         ]}

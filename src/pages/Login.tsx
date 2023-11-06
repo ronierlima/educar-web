@@ -3,9 +3,8 @@ import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Page } from "../components/Page";
-import { Papel, useUser } from "../context/UserContext";
+import { useUser } from "../context/UserContext";
 import { ApiService } from "../services/api";
-import { SegmentedValue } from "antd/es/segmented";
 
 export interface UserCrendentials {
   email: number;
@@ -16,6 +15,7 @@ interface JwtUser {
   usuario_id: number;
   usuario_nome: string;
   roles: Array<string>;
+  curso_id: number;
 }
 
 export function Login() {
@@ -31,7 +31,12 @@ export function Login() {
 
       const payload = (await jwtDecode(response?.data)) as JwtUser;
 
-      const user = { id: payload.usuario_id, nome: payload.usuario_nome, roles: payload.roles };
+      const user = {
+        id: payload.usuario_id,
+        nome: payload.usuario_nome,
+        curso_id: payload.curso_id,
+        roles: payload.roles,
+      };
       console.log(user);
 
       login(user, response?.data);
@@ -41,7 +46,7 @@ export function Login() {
         setOpen(true);
         return;
       } else {
-        navigate("/");
+        navigate("/cursos");
       }
     } catch (error) {
       console.log(error);
@@ -53,7 +58,6 @@ export function Login() {
 
     perfil && changeRole(perfil);
     setOpen(false);
-    navigate("/");
   };
 
   return (

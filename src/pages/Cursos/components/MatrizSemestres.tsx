@@ -118,7 +118,7 @@ export const MatrizSemestres = ({
         <Empty imageStyle={{ height: 128 }} description={<span>Nenhuma disciplina no semestre</span>}></Empty>
       ),
       style: panelStyle,
-      extra: (
+      extra: removerSemestre && (
         <Space>
           <Button
             type="dashed"
@@ -132,20 +132,18 @@ export const MatrizSemestres = ({
             {screens.xs ? null : "Editar Semestre"}
           </Button>
 
-          {removerSemestre && (
-            <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsModalOpenSemestre(true);
-                setSemestreId(semestre.id);
-              }}
-            >
-              {screens.xs ? null : "Remover Semestre"}
-            </Button>
-          )}
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsModalOpenSemestre(true);
+              setSemestreId(semestre.id);
+            }}
+          >
+            {screens.xs ? null : "Remover Semestre"}
+          </Button>
         </Space>
       ),
     }));

@@ -1,8 +1,10 @@
-import { ReactNode, createContext, useContext, useState } from "react";
+import { ReactNode, createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export interface User {
   id: number;
   nome: string;
+  curso_id: number;
   roles: string[];
 }
 
@@ -39,6 +41,14 @@ interface UserProviderProps {
 export function UserProvider({ children }: UserProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("educar@token");
+    token && setToken(token);
+    const user = localStorage.getItem("educar@user");
+    user && setUser(JSON.parse(user));
+  }, []);
 
   const login = (user: User, authToken: string) => {
     setUser(user);
@@ -50,11 +60,31 @@ export function UserProvider({ children }: UserProviderProps) {
   const logout = () => {
     setUser(null);
     setToken(null);
+    localStorage.removeItem("educar@token");
+    localStorage.removeItem("educar@user");
+    localStorage.removeItem("educar@perfil");
+
+    navigate("/login");
   };
 
   const changeRole = (role: string) => {
     console.log(role);
     localStorage.setItem("educar@perfil", role.toString());
+
+    switch (role) {
+      case "ALUNO":
+        navigate(`/cursos/${user?.curso_id}`);
+        return;
+      case "PROFESSOR":
+        navigate(`/cursos/${user?.curso_id}`);
+        return;
+      case "COORDENADOR":
+        navigate("/cursos");
+        return;
+      case "ADMIN":
+        navigate("/usuarios");
+        return;
+    }
   };
 
   const getRole = () => {
